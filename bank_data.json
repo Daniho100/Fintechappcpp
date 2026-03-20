@@ -1,0 +1,134 @@
+{
+    "accounts": {
+        "Daniel": {
+            "account_number": "ACC-611556",
+            "balance": 2000.0,
+            "fixed_savings": [
+                {
+                    "amount": 3000.0,
+                    "duration_days": 3,
+                    "interest_rate": 0.05,
+                    "start_time": 1773972284
+                }
+            ],
+            "savings": 4000.0,
+            "transactions": [
+                {
+                    "amount": 10000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 02:30",
+                    "type": "Deposit"
+                },
+                {
+                    "amount": -2000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:03",
+                    "type": "Withdrawal"
+                },
+                {
+                    "amount": -500.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:03",
+                    "type": "Withdrawal"
+                },
+                {
+                    "amount": -500.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:03",
+                    "type": "Bill Payment (Airtime)"
+                },
+                {
+                    "amount": -4000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:03",
+                    "type": "To Savings"
+                },
+                {
+                    "amount": 2500.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:04",
+                    "type": "Deposit"
+                },
+                {
+                    "amount": 2500.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:04",
+                    "type": "Loan Received"
+                },
+                {
+                    "amount": -3000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:04",
+                    "type": "Fixed Saving"
+                },
+                {
+                    "amount": -1000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:09",
+                    "type": "Withdrawal"
+                },
+                {
+                    "amount": -1000.0,
+                    "other_party": "ACC-297426",
+                    "timestamp": "2026-03-20 03:09",
+                    "type": "Transfer Out"
+                }
+            ]
+        },
+        "Jane": {
+            "account_number": "ACC-297426",
+            "balance": 1000.0,
+            "fixed_savings": [],
+            "savings": 0.0,
+            "transactions": [
+                {
+                    "amount": 1000.0,
+                    "other_party": "",
+                    "timestamp": "2026-03-20 03:09",
+                    "type": "Deposit"
+                },
+                {
+                    "amount": 1000.0,
+                    "other_party": "ACC-611556",
+                    "timestamp": "2026-03-20 03:09",
+                    "type": "Transfer In"
+                }
+            ]
+        },
+        "Mary": {
+            "account_number": "ACC-485342",
+            "balance": 0.0,
+            "fixed_savings": [],
+            "savings": 0.0,
+            "transactions": []
+        }
+    },
+    "loans": {
+        "Daniel": [
+            {
+                "due_date": 1774145051,
+                "interest_rate": 0.3,
+                "is_overdue": false,
+                "principal": 2500.0,
+                "remaining": 3250.0,
+                "repayment_amount": 3250.0
+            }
+        ],
+        "Jane": [],
+        "Mary": []
+    },
+    "users": {
+        "Daniel": {
+            "password_hash": "",
+            "salt": "c8715c4743d4db9430cbf8b013a9b580"
+        },
+        "Jane": {
+            "password_hash": "",
+            "salt": "e3ed626291a2518e87485924bb50c7d6"
+        },
+        "Mary": {
+            "password_hash": "",
+            "salt": "85456c15e1a68d61b242f54c7b9f9e03"
+        }
+    }
+}

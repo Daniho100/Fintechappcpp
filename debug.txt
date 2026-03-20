@@ -1,0 +1,12 @@
+=== Application started at 03:18:02 ===
+pening Login Dialog...
+LoginDlgProc: Dialog opened.
+LoginDlgProc: Attempt login for Daniel
+WinMain: Login successful for 'Daniel'. Opening Dashboard...
+MainWindowDlgProc: Dashboard opened for Daniel
+TransferDlgProc: Dialog opened.
+ViewHistoryDlgProc: Opening history
+Logging out user: Daniel
+LoginDlgProc: Dialog opened.
+WinMain: Saving bank data...
+WinMain: Application exiting.
