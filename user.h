@@ -12,7 +12,6 @@
 
 class User {
 public:
-    // NEW user
     User(const std::string& username, const std::string& password)
         : username_(username),
           password_hash_(""),
@@ -37,7 +36,6 @@ public:
     const std::string& GetSalt() const { return salt_; }
 
 private:
-    // ⚠️ ORDER MATTERS (matches constructor now)
     std::string username_;
     std::string password_hash_;
     std::string salt_;
@@ -109,4 +107,4 @@ private:
     }
 };
 
-#endif // USER_H
+#endif 

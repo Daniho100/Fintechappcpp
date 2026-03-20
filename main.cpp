@@ -78,10 +78,3 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 
 
-// If you want, next I can help you:
-
-// Add transaction history UI (proper fintech style)
-
-// Add audit logs (very important for fintech)
-
-// Or make this production-safe (no data corruption, crash-safe writes)
