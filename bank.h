@@ -7,12 +7,12 @@
 #include <map>
 #include <vector>
 #include <fstream>
-#include <nlohmann/json.hpp>
-#include <mutex>
-#include <memory>
 #include <string>
 #include <thread>
+#include <mutex>
+#include <memory>
 #include <random>
+#include <nlohmann/json.hpp>
 
 extern void DebugLog(const std::string& msg);
 
@@ -20,24 +20,32 @@ using json = nlohmann::json;
 
 class Bank {
 public:
+    // Bank(const std::string& path) : data_file_(path) {}
+
+    Bank(const std::string& exe_path) {
+        // Set the data file directly inside the Program Files install directory
+        data_file_ = exe_path + "\\bank_data.json";
+
+        // Ensure the folder exists
+        std::filesystem::create_directories(exe_path);
+    }
+
+    // User registration
     bool RegisterUser(const std::string& username, const std::string& password) {
         std::lock_guard<std::mutex> lock(mutex_);
-
         if (users_.count(username)) return false;
 
         users_[username] = std::make_unique<User>(username, password);
         accounts_[username] = std::make_unique<Account>();
 
+        // Generate unique account number
         std::string acc_num;
-        do {
-            acc_num = GenerateAccountNumber();
-        } while (account_number_to_username_.count(acc_num));
-
+        do { acc_num = GenerateAccountNumber(); } 
+        while (account_number_to_username_.count(acc_num));
         accounts_[username]->SetAccountNumber(acc_num);
         account_number_to_username_[acc_num] = username;
 
         loans_.try_emplace(username);
-
         AsyncSaveToFile();
         return true;
     }
@@ -60,7 +68,6 @@ public:
         std::lock_guard<std::mutex> lock(mutex_);
         auto acc = GetAccount(username);
         if (!acc || amount <= 0) return false;
-
         if (acc->Withdraw(amount)) {
             acc->AddTransaction("Bill Payment (" + billType + ")", -amount);
             AsyncSaveToFile();
@@ -97,7 +104,6 @@ public:
 
         auto it = account_number_to_username_.find(to_account_number);
         if (it == account_number_to_username_.end()) return false;
-
         std::string to_username = it->second;
         if (to_username == from_username) return false;
 
@@ -114,21 +120,82 @@ public:
         return false;
     }
 
-    void LoadFromFile(const std::string& filename = "bank_data.json") {
-        std::lock_guard<std::mutex> lock(mutex_);
+    // void LoadFromFile() {
+    //     std::lock_guard<std::mutex> lock(mutex_);
+    //     std::ifstream f(data_file_);
+    //     if (!f.is_open()) return;
 
-        std::ifstream file(filename);
-        if (!file.is_open()) return;
+    //     json j;
+    //     f >> j;
+
+    //     if (j.contains("users")) {
+    //         for (auto& [uname, data] : j["users"].items()) {
+    //             users_[uname] = std::make_unique<User>(uname, data["password_hash"], data["salt"]);
+    //         }
+    //     }
+    //     if (j.contains("accounts")) {
+    //         for (auto& [uname, data] : j["accounts"].items()) {
+    //             accounts_[uname] = std::make_unique<Account>();
+    //             accounts_[uname]->LoadFromJson(data);
+    //             std::string num = accounts_[uname]->GetAccountNumber();
+    //             if (!num.empty()) account_number_to_username_[num] = uname;
+    //         }
+    //     }
+    //     if (j.contains("loans")) {
+    //         for (auto& [uname, arr] : j["loans"].items()) {
+    //             loans_.try_emplace(uname);
+    //             for (auto& item : arr) {
+    //                 auto loan = std::make_unique<Loan>(0,0,1);
+    //                 loan->LoadFromJson(item);
+    //                 loans_[uname].push_back(std::move(loan));
+    //             }
+    //         }
+    //     }
+    // }
+
+    // void SaveToFileSync() {
+    //     std::lock_guard<std::mutex> lock(mutex_);
+    //     json j;
+
+    //     for (auto& [uname, user] : users_) {
+    //         j["users"][uname] = {
+    //             {"password_hash", user->GetPasswordHash()},
+    //             {"salt", user->GetSalt()}
+    //         };
+    //     }
+    //     for (auto& [uname, acc] : accounts_) {
+    //         j["accounts"][uname] = acc->ToJson();
+    //     }
+    //     for (auto& [uname, vec] : loans_) {
+    //         json arr = json::array();
+    //         for (auto& loan : vec) arr.push_back(loan->ToJson());
+    //         j["loans"][uname] = arr;
+    //     }
+
+    //     std::ofstream f(data_file_);
+    //     f << j.dump(4);
+    // }
+
+
+
+
+
+ void LoadFromFile() {
+        std::lock_guard<std::mutex> lock(mutex_);
+        std::ifstream f(data_file_);
+        if (!f.is_open()) return;
 
         json j;
-        file >> j;
+        f >> j;
 
+        // load users
         if (j.contains("users")) {
             for (auto& [uname, data] : j["users"].items()) {
                 users_[uname] = std::make_unique<User>(uname, data["password_hash"], data["salt"]);
             }
         }
 
+        // load accounts
         if (j.contains("accounts")) {
             for (auto& [uname, data] : j["accounts"].items()) {
                 accounts_[uname] = std::make_unique<Account>();
@@ -138,6 +205,7 @@ public:
             }
         }
 
+        // load loans
         if (j.contains("loans")) {
             for (auto& [uname, arr] : j["loans"].items()) {
                 loans_.try_emplace(uname);
@@ -150,40 +218,40 @@ public:
         }
     }
 
-    void SaveToFileSync(const std::string& filename = "bank_data.json") {
+    void SaveToFileSync() {
         std::lock_guard<std::mutex> lock(mutex_);
 
         json j;
-
         for (auto& [uname, user] : users_) {
-            j["users"][uname] = {
-                {"password_hash", user->GetPasswordHash()},
-                {"salt", user->GetSalt()}
-            };
+            j["users"][uname] = { {"password_hash", user->GetPasswordHash()}, {"salt", user->GetSalt()} };
         }
-
         for (auto& [uname, acc] : accounts_) {
             j["accounts"][uname] = acc->ToJson();
         }
-
         for (auto& [uname, vec] : loans_) {
             json arr = json::array();
             for (auto& loan : vec) arr.push_back(loan->ToJson());
             j["loans"][uname] = arr;
         }
 
-        std::ofstream file(filename);
-        file << j.dump(4);
+        std::ofstream f(data_file_);
+        f << j.dump(4);
+    }
+
+
+
+
+
+
+
+
+
+    void AsyncSaveToFile() {
+        std::string file = data_file_;
+        std::thread([this, file](){ SaveToFileSync(); }).detach();
     }
 
 private:
-    std::map<std::string, std::unique_ptr<User>> users_;
-    std::map<std::string, std::unique_ptr<Account>> accounts_;
-    std::map<std::string, std::vector<std::unique_ptr<Loan>>> loans_;
-    std::map<std::string, std::string> account_number_to_username_;
-
-    std::mutex mutex_;
-
     std::string GenerateAccountNumber() {
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -191,9 +259,12 @@ private:
         return "ACC-" + std::to_string(dis(gen));
     }
 
-    void AsyncSaveToFile(const std::string& filename = "bank_data.json") {
-        std::thread([this, filename]() { SaveToFileSync(filename); }).detach();
-    }
+    std::map<std::string, std::unique_ptr<User>> users_;
+    std::map<std::string, std::unique_ptr<Account>> accounts_;
+    std::map<std::string, std::vector<std::unique_ptr<Loan>>> loans_;
+    std::map<std::string, std::string> account_number_to_username_;
+    std::mutex mutex_;
+    std::string data_file_;
 };
 
 extern Bank g_bank;

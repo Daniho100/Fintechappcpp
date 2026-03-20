@@ -15,9 +15,7 @@ extern void DebugLog(const std::string& msg);
 extern std::string g_logged_user;
 extern Bank g_bank;
 
-// ======================
 // Helper functions
-// ======================
 std::string GetDlgItemText(HWND hDlg, int nID) {
     char buffer[256] = {0};
     GetDlgItemTextA(hDlg, nID, buffer, sizeof(buffer));
@@ -25,11 +23,10 @@ std::string GetDlgItemText(HWND hDlg, int nID) {
 }
 
 double SanitizeDouble(const std::string& str) {
-    try { return std::stod(str); } catch (...) { return -1.0; }
+    try { return std::stod(str); } catch(...) { return -1.0; }
 }
-
 int SanitizeInt(const std::string& str) {
-    try { return std::stoi(str); } catch (...) { return -1; }
+    try { return std::stoi(str); } catch(...) { return -1; }
 }
 
 // ======================
@@ -532,14 +529,9 @@ INT_PTR CALLBACK MainWindowDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARA
 
          case ID_LOGOUT:
             DebugLog("Logging out user: " + g_logged_user);
+            g_bank.SaveToFileSync();
             g_logged_user.clear();
             EndDialog(hDlg, 0);
-            DialogBoxA(
-                GetModuleHandle(NULL),
-                MAKEINTRESOURCE(IDD_LOGIN_DIALOG), 
-                NULL,
-                LoginDlgProc
-            );
             return TRUE;
         }
         return TRUE;

@@ -1,0 +1,6 @@
+=== Application started at 03:18:02 ===
+pening Login Dialog...
+LoginDlgProc: Dialog opened.
+WinMain: Login canceled.
+WinMain: Saving bank data...
+WinMain: Application exiting.
